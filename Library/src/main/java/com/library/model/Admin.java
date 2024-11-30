@@ -24,11 +24,10 @@ public class Admin {
     private String lastName;
     private String username;
     private String password;
-    private String repeatPassword;
 
-    /*@Lob
+    @Lob
     @Column(columnDefinition = "TEXT")
-    private String image;*/
+    private String image;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "admin_roles",

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+</head>
+<body>
+<h1>An error occurred!</h1>
+<p><strong>Message:</strong> <span th:text="${message}"></span></p>
+<p><strong>Exception:</strong> <span th:text="${exceptionMessage}"></span></p>
+<p><strong>Stack trace:</strong></p>
+<pre th:text="${stackTrace}"></pre>
+<a href="/" >Go to Home</a>
+</body>
+</html>

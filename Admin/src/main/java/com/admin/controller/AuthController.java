@@ -3,9 +3,7 @@ package com.admin.controller;
 import com.library.dto.AdminDto;
 import com.library.model.Admin;
 import com.library.service.AdminService;
-import com.library.service.impl.AdminServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -61,11 +59,9 @@ public class AuthController {
         try {
             if (result.hasErrors()) {
                 model.addAttribute("adminDto", adminDto);
-                result.toString();
                 return "register";
             }
-            String username = adminDto.getUsername();
-            Admin admin = adminService.findByUsername(username);
+            Admin admin = adminService.findByUsername(adminDto.getUsername());
             if (admin != null) {
                 model.addAttribute("adminDto", adminDto);
                 System.out.println("admin not null");
@@ -81,7 +77,7 @@ public class AuthController {
             } else {
                 model.addAttribute("adminDto", adminDto);
                 model.addAttribute("passwordError", "Your password maybe wrong! Check again!");
-                System.out.println("password not same");
+                System.out.println("password is not same");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,9 +108,12 @@ public class AuthController {
     }
 
 
-    @GetMapping("/index_1")
-    public ResponseEntity<String> index() {
-        return ResponseEntity.ok("Welcome to the Admin Dashboard!"); // Вернуть текстовый или JSON-ответ
+    @GetMapping("/profile")
+    public String profile(Model model) {
+        model.addAttribute("title", "Profile");
+
+
+        return "profile";
     }
 
 

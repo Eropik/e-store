@@ -6,9 +6,13 @@ import com.library.model.Customer;
 public interface CustomerService {
 
 
-    CustomerDto save(CustomerDto customerDto);
+    Customer save(CustomerDto customerDto);
 
     Customer findByUsername(String username);
 
-    Customer saveInfor(Customer customer);
+    Customer update(CustomerDto customerDto);
+
+    Customer changePass(CustomerDto customerDto);
+
+    CustomerDto getCustomer(String username);
 }

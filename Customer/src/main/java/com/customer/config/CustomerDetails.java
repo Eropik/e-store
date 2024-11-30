@@ -14,10 +14,11 @@ public class CustomerDetails implements UserDetails {
     private Customer customer;
 
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
-        for(Role role : customer.getRoles()) {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        for(Role role : customer.getRoles()){
             authorities.add(new SimpleGrantedAuthority(role.getName()));
         }
         return authorities;
@@ -35,21 +36,21 @@ public class CustomerDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return true;
     }
 }

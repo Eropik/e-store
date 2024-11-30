@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -18,41 +19,113 @@ public class CustomerServiceImpl implements CustomerService {
     private final RoleRepository roleRepository;
 
     @Override
-    public CustomerDto save(CustomerDto customerDto) {
+    public Customer save(CustomerDto customerDto) {
         Customer customer = new Customer();
         customer.setFirstName(customerDto.getFirstName());
         customer.setLastName(customerDto.getLastName());
         customer.setPassword(customerDto.getPassword());
         customer.setUsername(customerDto.getUsername());
-        customer.setRoles(Arrays.asList(roleRepository.findByName("CUSTOMER")));
-        return mappedDto(customerRepository.save(customer));
-
-
+        customer.setRoles(Collections.singletonList(roleRepository.findByName("CUSTOMER")));
+        return customerRepository.save(customer);
     }
 
     @Override
     public Customer findByUsername(String username) {
-        return customerRepository.findByUsername(username);
+        System.out.println("------------------------------");
+        System.out.println("Find customer by username: " + username);
+        System.out.println("------------------------------");
+        try {
+            return customerRepository.findByUsername(username);
+        } catch (Exception e) {
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------"); System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------"); System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("Customer not found");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------"); System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------"); System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------"); System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+            System.out.println("------------------------------");
+        }
+        return null;
     }
 
     @Override
-    public Customer saveInfor(Customer customer) {
-        Customer customerSave = customerRepository.findByUsername(customer.getUsername());
-        customerSave.setAddress(customer.getAddress());
-        customerSave.setPhoneNumber(customer.getPhoneNumber());
-        customerSave.setCity(customer.getCity());
-        customerSave.setCountry(customer.getCountry());
-        return customerRepository.save(customerSave);
+    public Customer update(CustomerDto customerDto) {
+        Customer customer = findByUsername(customerDto.getUsername());
+        customer.setAddress(customerDto.getAddress());
+        customer.setCity(customerDto.getCity());
+        customer.setCountry(customerDto.getCountry());
+        customer.setPhoneNumber(customerDto.getPhoneNumber());
+        return customerRepository.save(customer);
     }
 
-    private CustomerDto mappedDto(Customer customer) {
+    @Override
+    public Customer changePass(CustomerDto customerDto) {
+        Customer customer = customerRepository.findByUsername(customerDto.getUsername());
+        customer.setPassword(customerDto.getPassword());
+        return customerRepository.save(customer);
+    }
+
+    @Override
+    public CustomerDto getCustomer(String username) {
         CustomerDto customerDto = new CustomerDto();
+        Customer customer = customerRepository.findByUsername(username);
         customerDto.setFirstName(customer.getFirstName());
         customerDto.setLastName(customer.getLastName());
         customerDto.setPassword(customer.getPassword());
         customerDto.setUsername(customer.getUsername());
-
-
+        customerDto.setAddress(customer.getAddress());
+        customerDto.setPhoneNumber(customer.getPhoneNumber());
+        customerDto.setCity(customer.getCity());
+        customerDto.setCountry(customer.getCountry());
         return customerDto;
     }
+
+
+
+
 }

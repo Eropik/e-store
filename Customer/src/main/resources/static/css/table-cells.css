@@ -1,0 +1,166 @@
+/*
+!* General Styles for Cart Page *!
+.cart-box-main {
+    padding: 40px 0;
+    background-color: #f9f9f9;
+}
+
+.container1 {
+    max-width: 1200px;
+    margin: auto;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.text-center {
+    font-size: 18px;
+    color: #555;
+    margin: 20px 0;
+}
+
+!* Table Styles *!
+.table-main1 {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table-main1 table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.table-main1 th,
+.table-main1 td {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    text-align: center;
+    font-size: 14px;
+}
+
+.table-main1 thead th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.table-main1 tbody tr:hover {
+    background-color: #f7f7f7;
+}
+
+!* Product Image Styles *!
+.product-image-cell {
+    width: 80px;
+}
+
+.product-image {
+    width: 60px; !* Set the desired width *!
+    height: 60px; !* Set the desired height *!
+    object-fit: cover; !* Ensure the image doesn't stretch *!
+    border-radius: 5px; !* Optional: adds rounded corners *!
+    border: 1px solid #ddd; !* Optional: adds a subtle border *!
+}
+
+
+!* Product Name Styles *!
+.product-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    text-align: left;
+}
+
+!* Quantity Input *!
+.quantity-box input {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+}
+
+!* Price and Total Styles *!
+.price-pr p,
+.total-pr p {
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+}
+
+!* Action Buttons *!
+.action-buttons .btn {
+    padding: 6px 12px;
+    font-size: 14px;
+    margin: 5px 0;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.action-buttons .btn-primary {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+}
+
+.action-buttons .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.action-buttons .btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+}
+
+.action-buttons .btn-danger:hover {
+    background-color: #c82333;
+}
+
+!* Order Summary Styles *!
+.order-box {
+    padding: 20px;
+    border: 1px solid #ddd;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+}
+
+.order-box h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.order-box h4,
+.order-box h5 {
+    font-size: 16px;
+    color: #555;
+}
+
+.order-box .font-weight-bold {
+    font-weight: bold;
+    color: #333;
+}
+
+.order-box .gr-total h5 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.shopping-box .btn {
+    background-color: #28a745;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+}
+
+.shopping-box .btn:hover {
+    background-color: #218838;
+}
+*/

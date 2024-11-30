@@ -13,39 +13,42 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    //Admin
-    @Query("select p from Product p")
-    Page<Product> pageProduct(Pageable pageable);
-
-
-    @Query("select p from Product p where p.description like %?1% or p.name like %?1% ")
-    Page<Product> searchProducts(Pageable pageable, String keyword);
-
-    @Query("select p from Product p where p.description like %?1% or p.name like %?1% ")
-    List<Product> searchProductList(String keyword);
-
-
-    Product findByName(String name);
-
-    //Customer
-
-    @Query("select p from Product p")
+    @Query("select p from Product p ")
     List<Product> getAllProduct();
 
-    @Query(value = "select p from products p order by rand() asc limit 4", nativeQuery = true)
-    List<Product> listViewProducts();
+    @Query("select p from Product p where p.name like %?1% or p.description like %?1%")
+    List<Product> findAllByNameOrDescription(String keyword);
 
-    @Query(value = "select * from products p inner join categories c on c.category_id= p.category_id where p.category_id = ?1 ", nativeQuery = true)
-    List<Product> findProductByCategoryId(Long categoryId);
 
-    @Query(value = "select p from Product p inner join Category c on c.id = p.category.id where c.id = ?1", nativeQuery = true)
-    List<Product> getProductsInCategory(Long categoryId);
+    @Query("select p from Product p inner join Category c ON c.id = p.category.id" +
+            " where p.category.name = ?1 ")
+    List<Product> findAllByCategory(String category);
 
-    @Query("select p from Product p order by p.costPrice desc ")
-    List<Product> filterHighToLowPrice();
+    @Query(value = "select " +
+            "p.product_id, p.name, p.description, p.current_quantity, p.cost_price, p.category_id, p.sale_price, p.image " +
+            "from products p order by random() limit 9", nativeQuery = true)
+    List<Product> randomProduct();
 
-    @Query("select p from Product p order by p.costPrice  ")
-    List<Product> filterLowToHighPrice();
+    @Query(value = "select " +
+            "p.product_id, p.name, p.description, p.current_quantity, p.cost_price, p.category_id, p.sale_price, p.image " +
+            "from products p order by p.cost_price desc limit 9", nativeQuery = true)
+    List<Product> filterHighProducts();
 
+    @Query(value = "select " +
+            "p.product_id, p.name, p.description, p.current_quantity, p.cost_price, p.category_id, p.sale_price, p.image " +
+            "from products p order by p.cost_price asc limit 9", nativeQuery = true)
+    List<Product> filterLowerProducts();
+
+
+    @Query(value = "select p.product_id, p.name, p.description, p.current_quantity, p.cost_price, p.category_id, p.sale_price, p.image from products p  limit 4", nativeQuery = true)
+    List<Product> listViewProduct();
+
+
+    @Query(value = "select p from Product p inner join Category c on c.id = ?1 and p.category.id = ?1")
+    List<Product> getProductByCategoryId(Long id);
+
+
+    @Query("select p from Product p where p.name like %?1% or p.description like %?1%")
+    List<Product> searchProducts(String keyword);
 
 }

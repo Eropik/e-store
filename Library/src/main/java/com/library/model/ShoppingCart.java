@@ -1,16 +1,17 @@
 package com.library.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
+@Getter
+@Setter
 @Data
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor
 @Table(name="shopping_cart")
 public class ShoppingCart {
 
@@ -23,13 +24,34 @@ public class ShoppingCart {
 
     private double totalPrice;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
     private Customer customer;
 
 
-    @OneToMany(cascade = CascadeType.DETACH, mappedBy = "shoppingCart")
+
+
+    @OneToMany(cascade = CascadeType.DETACH,fetch = FetchType.LAZY, mappedBy = "cart")
     private Set<CartItem> cartItems;
+
+    public ShoppingCart() {
+        this.cartItems = new HashSet<>();
+        this.totalItems = 0;
+        this.totalPrice = 0.0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        ShoppingCart that = (ShoppingCart) obj;
+        return Objects.equals(id, that.id);
+    }
 
 
 }

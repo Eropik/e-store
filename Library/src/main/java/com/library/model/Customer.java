@@ -1,17 +1,15 @@
 package com.library.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "customers", uniqueConstraints = @UniqueConstraint(columnNames = {"username", "image", "phone_number"}))
 public class Customer {
@@ -21,24 +19,25 @@ public class Customer {
     @Column(name = "customer_id")
     private Long id;
 
-    @Size(min = 2, max = 15, message = "First name should have 2-15 characters")
     private String firstName;
 
-    @Size(min = 2, max = 15, message = "Last name should have 2-15 characters")
     private String lastName;
 
     private String username;
+
     private String password;
 
     @Column(name = "phone_number")
     private String phoneNumber;
+
     private String address;
 
     @Column(name = "image", columnDefinition = "TEXT")
     private String image;
 
-    @Column(name="city")
-    private String city;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "name", referencedColumnName = "id")
+    private City city;
 
     private String country;
 
@@ -48,8 +47,15 @@ public class Customer {
     private Collection<Role> roles;
 
     @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
-    private ShoppingCart shoppingCart;
+    private ShoppingCart cart;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Order> orders;
+
+    public Customer() {
+        this.country = "NN";
+        this.cart = new ShoppingCart();
+        this.orders = new ArrayList<>();
+    }
+
 }

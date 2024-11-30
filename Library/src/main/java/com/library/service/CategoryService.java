@@ -6,22 +6,24 @@ import com.library.model.Category;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public interface CategoryService {
 
-    //Admin
-    List<Category> findAll();
-
-    List<Category> findByName(String name);
-
     Category save(Category category);
 
-    Category getById(Long id);
+    Category update(Category category);
+
+
+
+    List<Category> findAll();
+
+    Optional<Category> findById(Long id);
 
     void deleteById(Long id);
 
-    //Customer
-    List<CategoryDto> getCategoryAndProduct();
 
+
+    List<CategoryDto> getCategoriesAndSize();
 }

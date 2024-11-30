@@ -25,16 +25,20 @@ public class Order {
 
     private double totalPrice;
 
-    private double shippingFee;
+    private double tax;
 
     private String orderStatus;
 
-    private String notes;
+    private int quantity;
+
+    private String paymentMethod;
+
+    private boolean isAccept;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="customer_id", referencedColumnName = "customer_id")
     private Customer customer;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy ="order" )
-    private List<OrderDetail> orderDetailsList;
+    private List<OrderDetail> orderDetailList;
 }

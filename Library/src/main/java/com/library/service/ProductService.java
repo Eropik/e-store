@@ -6,33 +6,40 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ProductService {
 
+    List<Product> findAll();
 
-    //Admin
-    List<ProductDto> findAll();
-    ProductDto findById(Long id);
-    Product findByName(String name);
-    Product save(MultipartFile imageProduct, ProductDto productDto);
-    void deleteById(Long id);
-    Product update(MultipartFile imageProduct, ProductDto productDto);
-    Page<ProductDto> pageProducts(int pageNo);
+    List<ProductDto> products();
+
+    List<ProductDto> allProduct();
+
+    Product save(byte[] imageProduct, ProductDto product);
+
+    Product update(byte[] imageProduct, ProductDto productDto);
+
+    ProductDto getById(Long id);
+
+    List<ProductDto> randomProduct();
+
     Page<ProductDto> searchProducts(int pageNo, String keyword);
 
-    //Customer
-List<Product> getAllProducts();
+    Page<ProductDto> getAllProducts(int pageNo);
 
-List<Product> listViewProducts();
 
-Product getProductById(Long id);
+    List<ProductDto> findAllByCategory(String category);
 
-List<Product> getProductByCategoryId(Long categoryId);
 
-    List<Product> getProductsInCategory(Long categoryId);
+    List<ProductDto> filterHighProducts();
 
-    List<Product> filterHighToLowPrice();
+    List<ProductDto> filterLowerProducts();
 
-    List<Product> filterLowToHighPrice();
+    List<ProductDto> listViewProducts();
+
+    List<ProductDto> findByCategoryId(Long id);
+
+    List<ProductDto> searchProducts(String keyword);
 }

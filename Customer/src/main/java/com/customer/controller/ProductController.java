@@ -1,15 +1,17 @@
 package com.customer.controller;
 
 import com.library.dto.CategoryDto;
+import com.library.dto.ProductDto;
 import com.library.model.Category;
-import com.library.model.Product;
 import com.library.service.CategoryService;
 import com.library.service.ProductService;
+import com.library.utils.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -20,60 +22,139 @@ public class ProductController {
     private final ProductService productService;
     private final CategoryService categoryService;
 
-    @GetMapping("/products")
-    public String products(Model model) {
-        List<Product> products = productService.getAllProducts();
-        List<Product> listViewProduct = productService.listViewProducts();
-        List<CategoryDto> categoryDtoList = categoryService.getCategoryAndProduct();
-        model.addAttribute("viewProduct", listViewProduct);
-        model.addAttribute("products", products);
-        model.addAttribute("categories", categoryDtoList);
-        return "shop";
-    }
+    @GetMapping("/menu")
+    public String menu(Model model) {
+        model.addAttribute("page", "Products");
+        model.addAttribute("title", "Menu");
+        List<Category> categories = categoryService.findAll();
 
 
-    @GetMapping("/find-product/{id}")
-    public String findProduct(@PathVariable Long id, Model model) {
-        Product product = productService.getProductById(id);
-        model.addAttribute("product", product);
-        Long categoryId = product.getCategory().getId();
-        List<Product> products = productService.getProductByCategoryId(categoryId);
-        model.addAttribute("products", products);
-        return "products";
-    }
 
-    @GetMapping("/products-in-category/{id}")
-    public String getProductsInCategory(@PathVariable("id") Long categoryId, Model model) {
-        Category category = categoryService.getById(categoryId);
-        List<Product> products = productService.getProductsInCategory(categoryId);
-        List<CategoryDto> categories = categoryService.getCategoryAndProduct();
+        List<ProductDto> products = setImages(productService.products());
+
+
         model.addAttribute("products", products);
-        model.addAttribute("category", category);
         model.addAttribute("categories", categories);
-        return "products-in-category";
+        return "index";
+    }
+
+    @GetMapping("/product-detail/{id}")
+    public String details(@PathVariable("id") Long id, Model model) {
+        ProductDto product = productService.getById(id);
+        List<ProductDto> productDtoList = setImages(  productService.findAllByCategory(product.getCategory().getName()));
+
+        product.setImageBase64(ImageUtil.encodeToBase64(
+                ImageUtil.decompressImage(product.getImage())));
+
+
+        model.addAttribute("products", productDtoList);
+        model.addAttribute("title", "Product Detail");
+        model.addAttribute("page", "Product Detail");
+        model.addAttribute("productDetail", product);
+        return "product-detail";
+    }
+
+
+
+    @GetMapping("/shop-detail")
+    public String shopDetail(Model model) {
+        List<CategoryDto> categories = categoryService.getCategoriesAndSize();
+        model.addAttribute("categories", categories);
+
+        List<ProductDto> products = setImages(productService.randomProduct());
+
+        List<ProductDto> listView = setImages(productService.listViewProducts());
+
+
+        model.addAttribute("productViews", listView);
+        model.addAttribute("title", "Shop Detail");
+        model.addAttribute("page", "Shop Detail");
+        model.addAttribute("products", products);
+        return "shop-detail";
     }
 
     @GetMapping("/high-price")
     public String filterHighPrice(Model model) {
-        List<Category> categories = categoryService.findAll();
-        List<Product> products = productService.filterHighToLowPrice();
-        List<CategoryDto> categoryDtoList = categoryService.getCategoryAndProduct();
-        model.addAttribute("categoryDtoList", categoryDtoList);
-        model.addAttribute("products", products);
+        List<CategoryDto> categories = categoryService.getCategoriesAndSize();
         model.addAttribute("categories", categories);
-        return "filter-high-price";
-    }
 
-    @GetMapping("/low-price")
-    public String filterLowPrice(Model model) {
-        List<Category> categories = categoryService.findAll();
-        List<CategoryDto> categoryDtoList = categoryService.getCategoryAndProduct();
-        List<Product> products = productService.filterLowToHighPrice();
-        model.addAttribute("categoryDtoList", categoryDtoList);
+        List<ProductDto> products = setImages(productService.filterHighProducts());
+
+        List<ProductDto> listView = setImages(productService.listViewProducts());
+
+        model.addAttribute("title", "Shop Detail");
+        model.addAttribute("page", "Shop Detail");
+        model.addAttribute("productViews", listView);
         model.addAttribute("products", products);
-        model.addAttribute("categories", categories);
-        return "filter-low-price";
+        return "shop-detail";
     }
 
 
+    @GetMapping("/lower-price")
+    public String filterLowerPrice(Model model) {
+        List<CategoryDto> categories = categoryService.getCategoriesAndSize();
+        model.addAttribute("categories", categories);
+
+
+        List<ProductDto> products = setImages(productService.filterLowerProducts());
+
+        List<ProductDto> listView = setImages(productService.listViewProducts());
+
+
+
+
+        model.addAttribute("productViews", listView);
+
+        model.addAttribute("title", "Shop Detail");
+        model.addAttribute("page", "Shop Detail");
+        model.addAttribute("products", products);
+        return "shop-detail";
+    }
+
+    @GetMapping("/find-products/{id}")
+    public String productsInCategory(@PathVariable("id") Long id, Model model) {
+        List<CategoryDto> categoryDtos = categoryService.getCategoriesAndSize();
+
+
+
+        List<ProductDto> productDtos = setImages(productService.findByCategoryId(id));
+
+        List<ProductDto> listView = setImages(productService.listViewProducts());
+
+        model.addAttribute("productViews", listView);
+        model.addAttribute("categories", categoryDtos);
+        model.addAttribute("title", productDtos.get(0).getCategory().getName());
+        model.addAttribute("page", "Product-Category");
+        model.addAttribute("products", productDtos);
+        return "products";
+    }
+
+
+    @GetMapping("/search-product")
+    public String searchProduct(@RequestParam("keyword") String keyword, Model model) {
+        List<CategoryDto> categoryDtos = categoryService.getCategoriesAndSize();
+
+        List<ProductDto> productDtos = setImages(productService.searchProducts(keyword));
+
+        List<ProductDto> listView = setImages(productService.listViewProducts());
+
+        model.addAttribute("productViews", listView);
+        model.addAttribute("categories", categoryDtos);
+        model.addAttribute("title", "Search Products");
+        model.addAttribute("page", "Result Search");
+        model.addAttribute("products", productDtos);
+        return "products";
+    }
+
+
+    private List<ProductDto> setImages(List<ProductDto> products) {
+        for (ProductDto product : products) {
+            product.setImageBase64(
+                    ImageUtil.encodeToBase64(
+                            ImageUtil.decompressImage(product.getImage())
+                    )
+            );
+        }
+        return products;
+    }
 }

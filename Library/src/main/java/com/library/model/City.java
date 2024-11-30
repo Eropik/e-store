@@ -13,8 +13,10 @@ import lombok.NoArgsConstructor;
 public class City {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="city_id")
+
+
     private Long id;
+
     private String name;
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "country_id", referencedColumnName = "country_id", nullable = false)

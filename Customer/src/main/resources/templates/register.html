@@ -1,10 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+
+
+
+    <head  >
+        <link rel="stylesheet" th:href="@{/css/auth.css}">
+       <link rel="stylesheet" th:href="@{/css/base.css}">
+   <link rel="stylesheet" th:href="@{/css/form.css}">
+   <link rel="stylesheet" th:href="@{/css/social.css}">
+   <link rel="stylesheet" th:href="@{/css/back-to-top.css}">
+   <link rel="stylesheet" th:href="@{/css/resp.css}">
+   <title>Register</title>
+    </head>
+
+
+
+
+
 <body>
 
+<!--
+<div th:replace="~{fragments::main-top}"></div>
+<div th:replace="~{fragments::top-search}"></div>
+<div th:replace="~{fragments::all-title-box}"></div>-->
+
+<section id="register-form">
+    <div class="noi-dung">
+        <div class="form">
+            <h2>Register</h2>
+            <div th:if="${success}">
+                <p class="alert alert-success" th:text="${success}"></p>
+            </div>
+            <div th:if="${error}">
+                <p class="alert alert-danger" th:text="${error}"></p>
+            </div>
+
+
+            <form th:action="@{/do-register}" method="POST" th:object="${customerDto}">
+                <div class="input-form">
+                    <label>
+                        <input type="text" placeholder="First Name" name="firstname" th:field="*{firstName}" required>
+                    </label>
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('firstName')}"
+                         th:errors="*{firstName}"></div>
+                </div>
+                <div class="input-form">
+                    <label>
+                        <input type="text" placeholder="Last Name" name="lastname" th:field="*{lastName}" required>
+                    </label>
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('lastName')}"
+                         th:errors="*{lastName}"></div>
+                </div>
+                <div class="input-form">
+                    <label>
+                        <input type="email" placeholder="Username" name="username" th:field="*{username}" required>
+                    </label>
+                </div>
+                <div class="input-form">
+                    <label>
+                        <input type="password" placeholder="Password" name="password" th:field="*{password}" required>
+                    </label>
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('password')}"
+                         th:errors="*{password}"></div>
+                </div>
+                <div class="input-form">
+                    <label>
+                        <input type="password" placeholder="Verify password" name="confirm"
+                               th:field="*{confirmPassword}" required>
+                    </label>
+                </div>
+                <div class="input-form">
+                    <p>Do You Already Have An Account ? <a th:href="@{/login}"> Sign in now </a></p>
+                </div>
+                <div class="input-form">
+                    <input type="submit" value="Sign up">
+                </div>
+            </form>
+            <h3>Log In With Social Network</h3>
+            <ul class="icon-dang-nhap">
+                <li><i class="fab fa-facebook-f"></i></li>
+                <li><i class="fab fa-google"></i></li>
+                <li><i class="fab fa-weibo"></i></li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<footer> <!--th:replace="~{fragments::footer}">--></footer>
+<a href="#" id="back-to-top" title="Back to top" style="display: none;">&uarr;</a>
+<div ><!--th:replace="~{fragments::script}"--></div>
 </body>
+
 </html>

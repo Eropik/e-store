@@ -6,9 +6,11 @@ import com.library.model.Category;
 import com.library.model.Product;
 import com.library.service.CategoryService;
 import com.library.service.ProductService;
+import com.library.utils.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,50 +18,148 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
 public class ProductController {
-
     private final ProductService productService;
+
     private final CategoryService categoryService;
+
 
     @GetMapping("/products")
     public String products(Model model, Principal principal) {
         if (principal == null) {
             return "redirect:/login";
         }
-        List<ProductDto> productDtoList = productService.findAll();
-        model.addAttribute("title", "Manage Product");
-        model.addAttribute("products", productDtoList);
-        model.addAttribute("size", productDtoList.size());
-        return "productsV";
+        List<ProductDto> products = productService.allProduct();
+
+        for (ProductDto product : products) {
+            product.setImageBase64(
+                    ImageUtil.encodeToBase64(
+                            ImageUtil.decompressImage(product.getImage())));
+        }
+
+        model.addAttribute("products", products);
+        model.addAttribute("size", products.size());
+        return "products";
     }
 
-    @GetMapping("/add-product")
-    public String addProductForm(Model model, Principal principal) {
+    @GetMapping("/products/{pageNo}")
+    public String allProducts(@PathVariable("pageNo") int pageNo, Model model, Principal principal) {
         if (principal == null) {
             return "redirect:/login";
         }
+        Page<ProductDto> products = productService.getAllProducts(pageNo);
+        model.addAttribute("title", "Manage Products");
+
+        model.addAttribute("size", products.getSize());
+        for (ProductDto product : products) {
+            product.setImageBase64(
+                    ImageUtil.encodeToBase64(
+                            ImageUtil.decompressImage(product.getImage())));
+        }
+        model.addAttribute("products", products);
+
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("totalPages", products.getTotalPages());
+        return "products";
+    }
+
+    @GetMapping("1")
+    public String searchProduct1(@PathVariable("pageNo") int pageNo,
+                                @RequestParam(value = "keyword") String keyword,
+                                Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        Page<ProductDto> products = productService.searchProducts(pageNo, keyword);
+
+       /* for (ProductDto product : products) {
+            product.setImageBase64(
+                    ImageUtil.encodeToBase64(
+                            ImageUtil.decompressImage(product.getImage())));
+        }*/
+        for (ProductDto product : products) {
+            product.setImageBase64(
+                   null);}
+
+
+        model.addAttribute("products", products);
+
+        model.addAttribute("title", "Result Search Products");
+        model.addAttribute("size", products.getSize());
+
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("totalPages", products.getTotalPages());
+        return "1";
+
+    }
+
+    @GetMapping("/search-products/{pageNo}")
+    public String searchProduct(@PathVariable("pageNo") int pageNo,
+                                @RequestParam(value = "keyword") String keyword,
+                                Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        Page<ProductDto> productPage = productService.searchProducts(pageNo, keyword);
+
+        List<ProductDto> products = productPage.getContent();
+
+
+          for (ProductDto product : products) {
+            product.setImageBase64(
+                    ImageUtil.encodeToBase64(
+                            ImageUtil.decompressImage(product.getImage())));
+        }
+
+        model.addAttribute("products", products);
+
+
+        model.addAttribute("size", products.size());
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("totalPages", productPage.getTotalPages());
+
+        model.addAttribute("title", "Результаты поиска продуктов");
+
+        return "product-result";
+    }
+
+
+    @GetMapping("/add-product")
+    public String addProductPage(Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("title", "Add Product");
         List<Category> categories = categoryService.findAll();
         model.addAttribute("categories", categories);
-        model.addAttribute("product", new ProductDto());
+        model.addAttribute("productDto", new ProductDto());
         return "add-product";
     }
 
     @PostMapping("/save-product")
-    public String saveProduct(@ModelAttribute("product") ProductDto productDto,
+    public String saveProduct(@ModelAttribute("productDto") ProductDto product,
                               @RequestParam("imageProduct") MultipartFile imageProduct,
-                              RedirectAttributes redirectAttributes) {
+                              RedirectAttributes redirectAttributes, Principal principal) {
         try {
-            productService.save(imageProduct, productDto);
-            redirectAttributes.addFlashAttribute("success", "Product saved successfully");
+            if (principal == null) {
+                return "redirect:/login";
+            }
+            productService.save(imageProduct.getBytes(), product);
+            redirectAttributes.addFlashAttribute("success", "Add new product successfully!");
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", "Failed saving ");
+            redirectAttributes.addFlashAttribute("error", "Failed to add new product!");
         }
         return "redirect:/products/0";
     }
@@ -69,87 +169,58 @@ public class ProductController {
         if (principal == null) {
             return "redirect:/login";
         }
-        model.addAttribute("title", "Update Product");
-        ProductDto productDto = productService.findById(id);
-        model.addAttribute("productDto", productDto);
-
         List<Category> categories = categoryService.findAll();
+        ProductDto productDto = productService.getById(id);
+
+
+        byte[] decompressedImage = ImageUtil.decompressImage(productDto.getImage());
+        productDto.setImageBase64(ImageUtil.encodeToBase64(decompressedImage));
+
+
+        model.addAttribute("title", "Add Product");
         model.addAttribute("categories", categories);
+        model.addAttribute("productDto", productDto);
 
         return "update-product";
     }
 
     @PostMapping("/update-product/{id}")
-    public String processUpdate(
-            @PathVariable("id") Long id,
-            @ModelAttribute("productDto") ProductDto productDto,
-            @RequestParam("imageProduct") MultipartFile imageProduct,
-            RedirectAttributes redirectAttributes) {
-        try {
-            productService.update(imageProduct, productDto);
-            redirectAttributes.addFlashAttribute("success", "Product updated successfully");
-        } catch (Exception e) {
-            e.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", "Failed updating");
-        }
-        return "redirect:/products";
-    }
-
-    @RequestMapping(value = "/delete-product/{id}", method = {RequestMethod.PUT, RequestMethod.GET})
-    public String deleteProduct(@PathVariable("id") Long id, RedirectAttributes redirectAttributes, Principal principal) {
+    public String updateProduct(@ModelAttribute("productDto") ProductDto productDto,
+                                @RequestParam("imageProduct") MultipartFile imageProduct,
+                                RedirectAttributes redirectAttributes, Principal principal) {
         try {
             if (principal == null) {
                 return "redirect:/login";
             }
-            productService.deleteById(id);
-            redirectAttributes.addFlashAttribute("success", "Product deleted successfully");
+
+            productService.update(imageProduct.getBytes(), productDto);
+
+            redirectAttributes.addFlashAttribute("success", "Update successfully!");
         } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", "Failed deleting");
+            redirectAttributes.addFlashAttribute("error", "Error server, please try again!");
         }
         return "redirect:/products/0";
     }
 
-    @GetMapping("/products/{pageNo}")
-    public String productsPage(@PathVariable("pageNo") int pageNo, Model model, Principal principal) {
-        if (principal == null) {
-            return "redirect:/login";
-        }
-        Page<ProductDto> productPage = productService.pageProducts(pageNo);
-        model.addAttribute("title", "Manage Product");
-        model.addAttribute("size", productPage.getSize());
-        model.addAttribute("totalPages", productPage.getTotalPages());
-        model.addAttribute("products", productPage);
-        return "products";
-    }
 
-    @GetMapping("/search-result/{pageNo}")
-    public String searchResultPage(@PathVariable("pageNo") int pageNo,
-                                   @RequestParam("keyword") String keyword,
-                                   Model model, Principal principal) {
-        if (principal == null) {
-            return "redirect:/login";
-        }
-        Page<ProductDto> products = productService.searchProducts(pageNo, keyword);
-        model.addAttribute("title", "Search Result");
-        model.addAttribute("size", products.getSize());
-        model.addAttribute("totalPages", products.getTotalPages());
-        model.addAttribute("currentPage", pageNo);
-        model.addAttribute("products", products);
-        return "search-result";
-    }
+
+
 
     //for Postman
+
     @PostMapping("/add-product_1")
-    public ResponseEntity<?> addProduct(
+    public ResponseEntity<?> addProductPage(
             @RequestParam("imageProduct") MultipartFile imageProduct,
             @ModelAttribute ProductDto productDto,
             Principal principal) {
-        if (principal == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Unauthorized"));
+        Product savedProduct = null;
+        try {
+            savedProduct = productService.save(imageProduct.getBytes(), productDto);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        Product savedProduct = productService.save(imageProduct, productDto);
+
         if (savedProduct != null) {
             return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
         } else {

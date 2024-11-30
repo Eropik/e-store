@@ -5,145 +5,168 @@ import com.library.dto.ProductDto;
 import com.library.model.Product;
 import com.library.repository.ProductRepository;
 import com.library.service.ProductService;
-import com.library.utils.ImageUpload;
+import com.library.utils.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional//todo check
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
-    private final ImageUpload imageUpload;
 
-    //Admin
+
     @Override
-    public List<ProductDto> findAll() {
-        List<Product> productList = productRepository.findAll();
-        return transferListData(productList);
+    public List<Product> findAll() {
+        return productRepository.findAll();
     }
 
     @Override
-    public ProductDto findById(Long id) {
-        Product product = productRepository.findById(id).orElse(null);
-
-        if (product == null) {
-            System.out.println("Product with id " + id + " not found.");
-            return null;
-        }
-
-        return setProductDtoFields(product);
+    public List<ProductDto> products() {
+        return transferData(productRepository.getAllProduct());
     }
 
     @Override
-    public Product findByName(String name) {
-        if (name == null || name.isEmpty()) {
-            System.out.println("Product name is null or empty.");
-            return null;
-        }
-
-        Product product = productRepository.findByName(name);
-
-        if (product == null) {
-            System.out.println("Product with name " + name + " not found.");
-        }
-
-        return product;
+    public List<ProductDto> allProduct() {
+        List<Product> products = productRepository.findAll();
+        List<ProductDto> productDtos = transferData(products);
+        return productDtos;
     }
 
     @Override
-    public Product update(MultipartFile imageProduct, ProductDto productDto) {
+    @Transactional
+    public Product save(byte[] imageProduct, ProductDto productDto) {
+        Product product = new Product();
         try {
-            Product product = productRepository.findById(productDto.getId()).orElse(null);
-            if (product != null) {
-                setProductFields(product, productDto, imageProduct);
-                return productRepository.save(product);
+            if (imageProduct == null) {
+                product.setImage(null);
+            } else {
+                product.setImage(ImageUtil.compressImage(imageProduct));
             }
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    @Override
-    public Page<ProductDto> pageProducts(int pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 5);
-        List<ProductDto> products =transferListData(productRepository.findAll());
-        try {
-            return toPage(products,pageable);
-        } catch (ClassCastException e) {
-           e.printStackTrace();
-            System.out.println("Cast exception");
-           return null;
-        }
-    }
-
-    @Override
-    public Page<ProductDto> searchProducts(int pageNo, String keyword) {
-        /*Pageable pageable = PageRequest.of(pageNo, 5);
-        List<ProductDto> productDtoList  =transferListData(productRepository.searchProductList(keyword));
-        return (Page<ProductDto>) toPage(productDtoList,pageable);
-           */
-
-
-        Pageable pageable = PageRequest.of(pageNo, 5);
-        return toPage( transferListData(productRepository.searchProductList(keyword)), pageable);
-    }
-
-
-
-    @Override
-    public Product save(MultipartFile imageProduct, ProductDto productDto) {
-        Product product = null;
-        try {
-            product = new Product();
-            setProductFields(product, productDto, imageProduct);
+            product.setName(productDto.getName());
+            product.setDescription(productDto.getDescription());
+            product.setCurrentQuantity(productDto.getCurrentQuantity());
+            product.setCostPrice(productDto.getCostPrice());
+            product.setCategory(productDto.getCategory());
             return productRepository.save(product);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(
+                    "Error save product"
+            );
             return null;
         }
-
-
     }
 
     @Override
-    public void deleteById(Long id) {
-        Product product = productRepository.findById(id).orElse(null);
-        if (product != null) {
-            productRepository.delete(product);
+    @Transactional
+    public Product update(byte[] imageProduct, ProductDto productDto) {
+        try {
+            Product productUpdate = productRepository.getReferenceById(productDto.getId());
+
+            if (imageProduct == null) {
+                productUpdate.setImage(null);
+            } else {
+                productUpdate.setImage(ImageUtil.compressImage(imageProduct));
+            }
+
+
+
+            productUpdate.setCategory(productDto.getCategory());
+            productUpdate.setId(productUpdate.getId());
+            productUpdate.setName(productDto.getName());
+            productUpdate.setDescription(productDto.getDescription());
+            productUpdate.setCostPrice(productDto.getCostPrice());
+            productUpdate.setSalePrice(productDto.getSalePrice());
+            productUpdate.setCurrentQuantity(productDto.getCurrentQuantity());
+            return productRepository.save(productUpdate);
+        } catch (Exception e) {
+            System.out.println("error upd prod");
+            return null;
         }
     }
 
-    //Customer
+
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.getAllProduct();
+    @Transactional
+    public ProductDto getById(Long id) {
+        ProductDto productDto = new ProductDto();
+        Product product = productRepository.getById(id);
+        productDto.setId(product.getId());
+        productDto.setName(product.getName());
+        productDto.setDescription(product.getDescription());
+        productDto.setCostPrice(product.getCostPrice());
+        productDto.setSalePrice(product.getSalePrice());
+        productDto.setCurrentQuantity(product.getCurrentQuantity());
+        productDto.setCategory(product.getCategory());
+
+        productDto.setImage(product.getImage());//todo
+        return productDto;
+    }
+
+
+
+    @Override
+    public List<ProductDto> randomProduct() {
+        return transferData(productRepository.randomProduct());
     }
 
     @Override
-    public List<Product> listViewProducts(){
-        return productRepository.listViewProducts();
+    @Transactional
+    public Page<ProductDto> searchProducts(int pageNo, String keyword) {
+        List<Product> products = productRepository.findAllByNameOrDescription(keyword);
+        List<ProductDto> productDtoList = transferData(products);
+        Pageable pageable = PageRequest.of(pageNo, 5);
+        Page<ProductDto> dtoPage = toPage(productDtoList, pageable);
+        return dtoPage;
     }
 
     @Override
-    public Product getProductById(Long id) {
-        return productRepository.findById(id).orElse(null);
+    public Page<ProductDto> getAllProducts(int pageNo) {
+        Pageable pageable = PageRequest.of(pageNo, 6);
+        List<ProductDto> productDtoLists = this.allProduct();
+        Page<ProductDto> productDtoPage = toPage(productDtoLists, pageable);
+        return productDtoPage;
+    }
+
+
+
+    @Override
+    public List<ProductDto> findAllByCategory(String category) {
+        return transferData(productRepository.findAllByCategory(category));
     }
 
     @Override
-    public List<Product> getProductByCategoryId(Long categoryId) {
-        return productRepository.findProductByCategoryId(categoryId);
+    public List<ProductDto> filterHighProducts() {
+        return transferData(productRepository.filterHighProducts());
+    }
+
+    @Override
+    public List<ProductDto> filterLowerProducts() {
+        return transferData(productRepository.filterLowerProducts());
+    }
+
+    @Override
+    public List<ProductDto> listViewProducts() {
+        return transferData(productRepository.listViewProduct());
+    }
+
+    @Override
+    public List<ProductDto> findByCategoryId(Long id) {
+        return transferData(productRepository.getProductByCategoryId(id));
+    }
+
+    @Override
+    public List<ProductDto> searchProducts(String keyword) {
+        return transferData(productRepository.searchProducts(keyword));
     }
 
     private Page toPage(List list, Pageable pageable) {
@@ -151,72 +174,14 @@ public class ProductServiceImpl implements ProductService {
             return Page.empty();
         }
         int startIndex = (int) pageable.getOffset();
-        int endIndex = Math.min((startIndex + pageable.getPageSize()), list.size());
-
+        int endIndex = ((pageable.getOffset() + pageable.getPageSize()) > list.size())
+                ? list.size()
+                : (int) (pageable.getOffset() + pageable.getPageSize());
         List subList = list.subList(startIndex, endIndex);
         return new PageImpl(subList, pageable, list.size());
     }
 
-    public List<ProductDto> products() {
-        return transferListData(productRepository.getAllProduct());
-    }
-
-    public List<ProductDto> allProduct() {
-        return transferListData(productRepository.findAll());
-    }
-
-    @Override
-    public List<Product> getProductsInCategory(Long categoryId) {
-        return productRepository.getProductsInCategory(categoryId);
-    }
-
-    @Override
-    public List<Product> filterHighToLowPrice() {
-        return productRepository.filterHighToLowPrice();
-    }
-
-    @Override
-    public List<Product> filterLowToHighPrice() {
-        return productRepository.filterLowToHighPrice();
-    }
-
-
-    private void setProductFields(Product product, ProductDto productDto, MultipartFile imageProduct) throws Exception {
-        if (imageProduct != null && !imageProduct.isEmpty()) {
-            if (imageUpload.checkExisted(imageProduct)) {
-                System.out.println("Image already exists: " + imageProduct.getOriginalFilename());
-            } else {
-                if (imageUpload.uploadImage(imageProduct)) {
-                    System.out.println("Uploaded image successfully");
-                    product.setImage(Base64.getEncoder().encodeToString(imageProduct.getBytes()));
-                }
-            }
-        } else {
-            product.setImage(productDto.getImage());
-        }
-        product.setName(productDto.getName());
-        product.setDescription(productDto.getDescription());
-        product.setCostPrice(productDto.getCostPrice());
-        product.setSalePrice(productDto.getSalePrice());
-        product.setCurrentQuantity(productDto.getCurrentQuantity());
-        product.setCategory(productDto.getCategory());
-        System.out.println(product.getName() + " : " + product.getCostPrice());
-    }
-
-    private ProductDto setProductDtoFields(Product product) {
-        ProductDto productDto = new ProductDto();
-        productDto.setId(product.getId());
-        productDto.setName(product.getName());
-        productDto.setDescription(product.getDescription());
-        productDto.setCostPrice(product.getCostPrice());
-        productDto.setSalePrice(product.getSalePrice());
-        productDto.setImage(product.getImage());
-        productDto.setCurrentQuantity(product.getCurrentQuantity());
-        productDto.setCategory(product.getCategory());
-        return productDto;
-    }
-
-    private List<ProductDto> transferListData(List<Product> products) {
+    private List<ProductDto> transferData(List<Product> products) {
         List<ProductDto> productDtos = new ArrayList<>();
         for (Product product : products) {
             ProductDto productDto = new ProductDto();
@@ -227,6 +192,7 @@ public class ProductServiceImpl implements ProductService {
             productDto.setSalePrice(product.getSalePrice());
             productDto.setDescription(product.getDescription());
             productDto.setImage(product.getImage());
+
             productDto.setCategory(product.getCategory());
             productDtos.add(productDto);
         }

@@ -11,11 +11,17 @@ import java.util.List;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-    @Query("select category from Category category where category.name =:name ")
-    List<Category> findByName(String name);
 
-  //Customer
 
-    @Query("select new com.library.dto.CategoryDto(c.id, c.name, count(p.category.id)) from Category c inner join Product p on p.category.id = c.id group by c.id")
-    List<CategoryDto> getCategoryAndProduct();
+
+
+    @Query(value = "update Category set name = ?1 where id = ?2")
+    Category update(String name, Long id);
+
+
+
+    @Query(value = "select new com.library.dto.CategoryDto(c.id, c.name, count(p.category.id)) " +
+            "from Category c left join Product p on c.id = p.category.id " +
+            "group by c.id ")
+    List<CategoryDto> getCategoriesAndSize();
 }

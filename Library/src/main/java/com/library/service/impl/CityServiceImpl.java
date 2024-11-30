@@ -15,7 +15,7 @@ public class CityServiceImpl implements CityService {
     private final CityRepository cityRepository;
 
     @Override
-    public List<City> getAll() {
+    public List<City> findAll() {
 
         return cityRepository.findAll();
     }

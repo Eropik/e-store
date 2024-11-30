@@ -1,10 +1,160 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<!-- Basic -->
+<head th:replace="~{fragments::head}">
+    <title></title></head>
+
+<body>
+<!-- Start Main Top -->
+<div th:replace="~{fragments::main-top}">
+
+</div>
+<!-- End Main Top -->
+
+<!-- Start Main Top -->
+<header th:replace="~{fragments::main-header}">
+</header>
+<!-- End Main Top -->
+
+<!-- Start Top Search -->
+<div th:replace="~{fragments::top-search}">
+</div>
+<!-- End Top Search -->
+
+<!-- Start All Title Box -->
+<div th:replace="~{fragments :: all-title-box}">
+</div>
+<!-- End All Title Box -->
+
+<section id="login-form">
+    <div class="noi-dung">
+        <div class="form">
+            <h2>Log In</h2>
+            <div th:if="${param.error}" class="alert alert-danger text-center">
+                Invalid username or password
+            </div>
+            <div th:if="${param.logout}" class="alert alert-success text-center">
+                You have been logged out!
+            </div>
+            <form th:action="@{/do-login}" method="post">
+                <div class="input-form">
+                    <label>
+                        <input type="text" placeholder="Name" name="username" required>
+                    </label>
+                </div>
+                <div class="input-form">
+                    <label>
+                        <input type="password" placeholder="Password" name="password">
+                    </label>
+                </div>
+                <div class="input-form">
+                    <input type="submit" value="Log In">
+                </div>
+                <div class="input-form">
+                    <p>U don't have an account <a th:href="@{/register}">Sign up now</a></p><!--todo-->
+                    <p>
+                        <a class="nav-link" href="/shop/register"> Register</a>
+                    </p>
+                </div>
+            </form>
+            <h3>Log In With Social Network</h3>
+            <ul class="icon-dang-nhap">
+                <li><i class="fab fa-facebook-f"></i></li>
+                <li><i class="fab fa-google"></i></li>
+            </ul>
+        </div>
+    </div>
+
+</section>
+
+<!-- Start copyright  -->
+<footer th:replace="~{fragments::footer}"></footer>
+<!-- End copyright  -->
+
+<a href="#" id="back-to-top" title="Back to top" style="display: none;">&uarr;</a>
+
+<!-- ALL JS FILES -->
+<div th:replace="~{fragments::script}"></div>
+</body>
+
+</html>
+
+
+<!--
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+
+<head th:replace="~{fragments::head}">
 </head>
+
 <body>
 
+<div th:replace="~{fragments::main-top}">
+
+</div>
+
+
+
+<header th:replace="~{fragments::main-header}" >
+</header>
+
+
+
+<div th:replace="~{fragments::top-search}">
+</div>
+
+
+
+<div th:replace="~{fragments :: all-title-box}">
+</div>
+
+
+<section id="login-form">
+    <div class="noi-dung">
+        <div class="form">
+            <h2>Log In</h2>
+            <div th:if = "${param.error}" class="alert alert-danger text-center">
+                Invalid username or password
+            </div>
+            <div th:if = "${param.logout}" class="alert alert-success text-center">
+                You have been logged out!
+            </div>
+            <form th:action="@{/do-login}" method="post">
+                <div class="input-form">
+                    <input type="text" placeholder="Name" name="username" required>
+                </div>
+                <div class="input-form">
+                    <input type="password" placeholder="Password" name="password">
+                </div>
+                <div class="input-form">
+                    <input type="submit" value="Log In">
+                </div>
+                <div class="input-form">
+                    <p>Do You Already Have An Account ? <a th:href="@{/register}">Sign up now  </a></p>
+                </div>
+            </form>
+            <h3>Log In With Social Network</h3>
+            <ul class="icon-dang-nhap">
+                <li><i class="fab fa-facebook-f"></i></i></li>
+                <li><i class="fab fa-google"></i></li>
+            </ul>
+        </div>
+    </div>
+
+</section>
+
+</section>
+
+<footer th:replace="~{fragments::footer}"></footer>
+
+
+<a href="#" id="back-to-top" title="Back to top" style="display: none;">&uarr;</a>
+
+
+<div th:replace="~{fragments::script}"></div>
 </body>
+
 </html>
+
+
+-->

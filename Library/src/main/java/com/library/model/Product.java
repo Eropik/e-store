@@ -4,12 +4,15 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+
+import java.util.Arrays;
 
 @Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="product", uniqueConstraints = @UniqueConstraint(columnNames = {"name","images"}))
+@Table(name="products", uniqueConstraints = @UniqueConstraint(columnNames = {"name","image"}))
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,9 +23,23 @@ public class Product {
     private String name;
     private String description;
 
+    @Override
+    public String toString() {
+        return "Product{" +
+                "category=" + category +
+                ", id=" + id +
+                ", currentQuantity=" + currentQuantity +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", image= lot of ... " +
+                ", salePrice=" + salePrice +
+                ", costPrice=" + costPrice +
+                '}';
+    }
+
     @Lob
-    @Column(columnDefinition = "TEXT")
-    private String image;
+    @Basic(fetch = FetchType.EAGER)
+    private byte[] image;
 
     private double salePrice;
     private double costPrice;
