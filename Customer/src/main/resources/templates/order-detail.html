@@ -49,21 +49,21 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="orderdetail : ${order.orderDetailList}">
+                        <tr th:each="orderdetail : ${order}">
 
-                            pzd
 
                             <td class="thumbnail-img">
-                                <a href="#">
-                                    <img th:src="'data:image/jpeg;base64,' +${orderdetail.product.image}"><!--TODO-->
-                                         class="img-fluid" alt="Image">
-                                </a>
+                                <img th:src="'data:image/jpeg;base64,'  + ${orderdetail.productDto.imageBase64}"
+                                     alt="Product Image"
+                                     style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 5px;    border: 1px solid #ddd; "/><!--todo rework pic-->
+
+
                             </td>
                             <td class="name-pr">
-                                <p th:text="${orderdetail.product.name}"></p>
+                                <p th:text="${orderdetail.productDto.name}"></p>
                             </td>
                             <td class="price-pr">
-                                <p th:text="'$' + ${orderdetail.product.costPrice}"></p>
+                                <p th:text="'$' + ${orderdetail.productDto.costPrice}"></p>
                             </td>
                         </tr>
                         </tbody>
@@ -74,9 +74,9 @@
                             <div class="order-box">
                                 <h3>Order summary</h3>
                                 <div class="d-flex">
-                                    <p>Total Quantity [(${order.quantity})]</p>
+                                    <p th:text="'Total Quantity: ' +  ${ord.quantity }"></p>
                                     <h4>Sub Total</h4>
-                                    <div class="ml-auto font-weight-bold" th:text="${order.totalPrice}"></div>
+                                    <div class="ml-auto font-weight-bold" th:text="${ord.totalPrice}"></div>
                                 </div>
                                 <hr class="my-1">
                             </div>

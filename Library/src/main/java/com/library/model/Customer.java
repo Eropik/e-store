@@ -39,7 +39,7 @@ public class Customer {
     @JoinColumn(name = "name", referencedColumnName = "id")
     private City city;
 
-    private String country;
+     private String country;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "customer_role", joinColumns = @JoinColumn(name = "customer_id", referencedColumnName = "customer_id"),
@@ -53,7 +53,6 @@ public class Customer {
     private List<Order> orders;
 
     public Customer() {
-        this.country = "NN";
         this.cart = new ShoppingCart();
         this.orders = new ArrayList<>();
     }

@@ -72,7 +72,7 @@ public class CategoryController {
             redirectAttributes.addFlashAttribute("error", "Duplicate name of category, please check again!");
         } catch (Exception e2) {
             e2.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", "Error from server or duplicate name of category, please check again!");
+            redirectAttributes.addFlashAttribute("error", "Error from server, please check again!");
         }
         return "redirect:/categories";
     }

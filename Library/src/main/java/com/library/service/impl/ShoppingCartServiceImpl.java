@@ -34,8 +34,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     @Override
     public List<CartItem> getCartItems(ShoppingCart cart) {
-
-
         return cart.getCartItems().stream()
                 .toList();
     }

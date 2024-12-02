@@ -4,11 +4,11 @@ import com.library.dto.CustomerDto;
 import com.library.model.Customer;
 import com.library.repository.CustomerRepository;
 import com.library.repository.RoleRepository;
+import com.library.service.CountryService;
 import com.library.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 @Service
@@ -17,6 +17,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
     private final RoleRepository roleRepository;
+    private final CountryService countryService;
 
     @Override
     public Customer save(CustomerDto customerDto) {
@@ -31,64 +32,10 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer findByUsername(String username) {
-        System.out.println("------------------------------");
-        System.out.println("Find customer by username: " + username);
-        System.out.println("------------------------------");
         try {
             return customerRepository.findByUsername(username);
         } catch (Exception e) {
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------"); System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------"); System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("Customer not found");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------"); System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------"); System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------"); System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
-            System.out.println("------------------------------");
+            System.out.println(e.getMessage());
         }
         return null;
     }
@@ -98,6 +45,9 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = findByUsername(customerDto.getUsername());
         customer.setAddress(customerDto.getAddress());
         customer.setCity(customerDto.getCity());
+
+
+
         customer.setCountry(customerDto.getCountry());
         customer.setPhoneNumber(customerDto.getPhoneNumber());
         return customerRepository.save(customer);

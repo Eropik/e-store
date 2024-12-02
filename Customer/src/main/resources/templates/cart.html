@@ -31,22 +31,25 @@
 
 
 <div class="cart-box-main">
+
+
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
                 <div class="table-main table-responsive">
                     <p class="text-center" th:if="${check}"><i class="text-info font-weight-bold text-center"></i>
                         You don't have any items in your cart</p>
-                    <table th:if="${grandTotal}" style="object-fit: cover;
-    border-radius: 5px;
-    border: 1px solid #ddd;">
+
+                    <table  th:if="${grandTotal}"
+                           style="object-fit: cover; border-radius: 5px;  border: 1px solid #ddd; width:100%">
+
                         <thead>
-                        <tr>
+                        <tr style="text-align: center;">
                             <th>Image</th>
                             <th>Product Name</th>
-                            <th>Price</th>
+                            <th style=" padding-inline: 30px ">Price</th>
                             <th>Quantity</th>
-                            <th>Total</th>
+                            <th style=" padding-inline: 30px ">Total</th>
                             <th>Action</th>
                         </tr>
                         </thead>
@@ -56,23 +59,25 @@
 
                             <td class="product-image-cell">
                                 <img th:src="'data:image/jpeg;base64,'  + ${itemWithDto.productDto.imageBase64 }"
-                                     alt="Product Image" style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 5px;    border: 1px solid #ddd; "/>
+                                     alt="Product Image"
+                                     style="max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 5px;    border: 1px solid #ddd; "/>
                             </td>
 
                             <td class="name-pr">
-                                <p th:text="${itemWithDto.productDto.name}" class="product-name"></p>
+                                <p  th:text="${itemWithDto.productDto.name}" class="product-name"></p>
                             </td>
 
                             <form th:action="@{/update-cart}" method="post" class="cart-item-form">
                                 <input type="hidden" name="id" th:value="${itemWithDto.productDto.id}">
 
                                 <td class="price-pr">
-                                    <p th:text="${itemWithDto.productDto.salePrice}" class="product-price"></p>
+                                    <p style=" padding-inline: 30px " th:text="${itemWithDto.productDto.costPrice }" class="product-price"></p>
                                 </td>
 
                                 <td class="quantity-box">
-                                    <label>
-                                        <input type="number" name="quantity" th:value="${itemWithDto.cartItem.quantity}"
+                                    <label style=" padding-inline: 30px ">
+                                        <input type="number" name="quantity"
+                                               th:value="${itemWithDto.cartItem.quantity}"
                                                size="4"
                                                min="0" step="1"
                                                class="c-input-text qty text">
@@ -81,11 +86,11 @@
 
 
                                 <td class="total-pr">
-                                    <p th:text="${itemWithDto.cartItem.quantity * itemWithDto.productDto.salePrice}"
+                                    <p style=" padding-inline: 30px " th:text="${itemWithDto.cartItem.quantity * itemWithDto.productDto.costPrice}"
                                        class="total-price"></p>
                                 </td>
 
-                                <td class="action-buttons">
+                                <td style=" padding-inline: 30px " class="action-buttons">
                                     <button type="submit" name="action" value="update" title="Update"
                                             class="btn btn-primary update-btn">
                                         Update
@@ -101,42 +106,51 @@
 
 
                         </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
 
-        <div class="row my-5" th:if="${grandTotal}">
-            <div class="col-lg-8 col-sm-12"></div>
-            <div class="col-lg-4 col-sm-12">
-                <div class="order-box">
-                    <h3>Order summary</h3>
-                    <div class="d-flex">
-                        <h4>Sub Total</h4>
-                        <div class="ml-auto font-weight-bold"></div>
-                    </div>
-                    <hr class="my-1">
-                    <div class="d-flex">
-                        <h4>Tax</h4>
-                        <div class="ml-auto font-weight-bold"> $2</div>
-                    </div>
-                    <div class="d-flex">
-                        <h4>Shipping Cost</h4>
-                        <div class="ml-auto font-weight-bold"> Free</div>
-                    </div>
-                    <hr>
-                    <div class="d-flex gr-total">
-                        <h5>Grand Total</h5>
-                        <div class="ml-auto h5" th:text="'$' + ${grandTotal + 2}"></div>
-                    </div>
-                    <hr>
+
+                    </table>
+
+
                 </div>
+
+                <div class="row my-5" th:if="${grandTotal}">
+                    <div class="col-lg-8 col-sm-12"></div>
+                    <div class="col-lg-4 col-sm-12">
+                        <div class="order-box">
+                            <h3>Order summary</h3>
+                            <div class="d-flex">
+                                <h4>Sub Total</h4>
+                                <div class="ml-auto font-weight-bold"></div>
+                            </div>
+                            <hr class="my-1">
+                            <div class="d-flex">
+                                <h4>Tax</h4>
+                                <div class="ml-auto font-weight-bold" th:text="${grandTotal*0.05}" ></div>
+                            </div>
+                            <div class = "d-flex">
+                                <h4>Shipping Cost</h4>
+                                <div class="ml-auto font-weight-bold"> Free</div><!--todo add server shipping and tax-->
+                            </div>
+                            <hr>
+                            <div class="d-flex gr-total">
+                                <h5>Grand Total</h5>
+                                <div class="ml-auto h5" th:text="'$' + ${grandTotal * 1.05}"></div>
+                            </div>
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex shopping-box"><a href="checkout.html" th:href="@{/check-out}"
+                                                               class="ml-auto btn hvr-hover">Checkout</a>
+                    </div>
+                </div>
+
+
             </div>
-            <div class="col-12 d-flex shopping-box"><a href="checkout.html" th:href="@{/check-out}"
-                                                       class="ml-auto btn hvr-hover">Checkout</a>
-            </div>
+
         </div>
     </div>
+
+
 </div>
 
 <div th:replace="~{fragments::instagram-box}">
